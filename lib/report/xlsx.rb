@@ -12,6 +12,9 @@ module Report
       require 'xlsx_writer'
       tmp_path = tmp_path(:extname => '.xlsx')
       workbook = XlsxWriter::Document.new
+      if format = report.formats[:xlsx]
+        format.call workbook
+      end
       report.tables.each do |table|
         sheet = workbook.add_sheet table.name
         table.each(report) do |row|

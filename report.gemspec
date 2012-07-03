@@ -20,4 +20,5 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency 'rspec'
   gem.add_development_dependency 'remote_table'
+  gem.add_development_dependency 'unix_utils'
 end

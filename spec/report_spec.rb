@@ -3,6 +3,7 @@
 require 'report'
 
 require 'remote_table'
+require 'unix_utils'
 
 class Translation < Struct.new(:language, :translation)
   class << self
@@ -104,6 +105,22 @@ class A6
   end
   def translations
     Translation.all
+  end
+end
+class A7
+  include Report
+  
+  format :xlsx do |xlsx|
+    xlsx.header.right.contents = 'Corporate Reporting Program'
+    xlsx.page_setup.top = 1.5
+    xlsx.page_setup.header = 0
+    xlsx.page_setup.footer = 0
+  end
+
+  table 'Hello' do
+    head do
+      row 'World'
+    end
   end
 end
 
@@ -213,6 +230,11 @@ describe Report do
       ru['Language'].should == 'Russian'
       ru['Forward'].should == 'Здравствуйте'
       ru['Backward'].should == 'Здравствуйте'.reverse
+    end
+    it "accepts a formatter that works on the raw XlsxWriter::Document" do
+      path = A7.new.xlsx.path
+      dir = UnixUtils.unzip path
+      File.read("#{dir}/xl/worksheets/sheet1.xml").should include('Corporate Reporting Program')
     end
   end
 end

@@ -18,13 +18,22 @@ module Report
     klass.extend ClassMethods
   end
 
-  def self.tables(name)
+  def self.tables(class_name)
     @tables ||= {}
-    @tables[name] ||= []
+    @tables[class_name] ||= []
+  end
+
+  def self.formats(class_name)
+    @formats ||= {}
+    @formats[class_name] ||= {}
   end
 
   def tables
-    Report.tables(self.class.name)
+    Report.tables self.class.name
+  end
+
+  def formats
+    Report.formats self.class.name
   end
 
   def csv
