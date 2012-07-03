@@ -1,29 +1,47 @@
 # Report
 
-TODO: Write a gem description
+DSL for creating CSV, XLSX, and PDF reports in Ruby.
 
-## Installation
+## Inspirations
 
-Add this line to your application's Gemfile:
+### dynamicreports
 
-    gem 'report'
+http://dynamicreports.rubyforge.org/
 
-And then execute:
+    class OrdersReport < DynamicReports::Report
+      title "Orders Report"
+      subtitle "All orders recorded in database"
+      columns :total, :created_at
 
-    $ bundle
+      chart :total_vs_quantity do
+        columns :total, :quantity
+        label_column "created_at"
+      end
+    end
 
-Or install it yourself as:
+    # in the controller
+    def orders
+      @orders = Order.find(:all, :limit => 25)
+      render :text => OrdersReport.on(@orders).to_html, :layout => "application"
+    end
 
-    $ gem install report
+### reportbuilder
 
-## Usage
+http://ruby-statsample.rubyforge.org/reportbuilder/
 
-TODO: Write usage instructions here
+    require "reportbuilder"    
+    rb=ReportBuilder.new do
+      text("2")
+      section(:name=>"Section 1") do
+        table(:name=>"Table", :header=>%w{id name}) do
+          row([1,"John"])
+        end
+      end
+      preformatted("Another Text")
+    end
+    rb.name="Html output"
+    puts rb.to_html
 
-## Contributing
+## Copyright
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Added some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+Copyright 2012 Brighter Planet, Inc.
