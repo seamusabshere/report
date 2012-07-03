@@ -1,3 +1,5 @@
+require 'report/head/row'
+
 module Report
   class Head
     attr_reader :table
@@ -7,11 +9,11 @@ module Report
       instance_eval(&blk)
     end
     def row(*cells)
-      @rows << cells
+      @rows << Row.new(self, cells)
     end
-    def each
+    def each(report)
       @rows.each do |row|
-        yield row
+        yield row.read(report)
       end
     end
   end

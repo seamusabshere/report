@@ -12,9 +12,12 @@ module Report
       @head ||= Head.new(self, &blk)
     end
     def each(report)
-      @head.each do |row|
-        yield row
-      end if defined?(@head)
+      if defined?(@head)
+        @head.each(report) do |row|
+          yield row
+        end
+        yield [] # blank row
+      end
       @body.each(report) do |row|
         yield row
       end if defined?(@body)

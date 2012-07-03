@@ -1,3 +1,7 @@
+require 'report/body/column'
+require 'report/body/row'
+require 'report/body/rows'
+
 module Report
   class Body
     attr_reader :table
