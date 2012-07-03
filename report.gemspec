@@ -16,6 +16,8 @@ Gem::Specification.new do |gem|
   gem.version       = Report::VERSION
 
   gem.add_runtime_dependency 'activesupport'
+  gem.add_runtime_dependency 'xlsx_writer'
 
   gem.add_development_dependency 'rspec'
+  gem.add_development_dependency 'remote_table'
 end

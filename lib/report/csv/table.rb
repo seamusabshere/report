@@ -4,7 +4,7 @@ module Report
       include Report::Utils
       def path
         return @path if defined?(@path)
-        tmp_path = tmp_path table.name, '.csv'
+        tmp_path = tmp_path(:hint => table.name, :extname => '.csv')
         File.open(tmp_path, 'wb') do |f|
           table.each(parent.report) do |row|
             Csv::Table::Row.new(row).write_to(f)

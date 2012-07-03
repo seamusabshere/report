@@ -30,4 +30,8 @@ module Report
   def csv
     @csv ||= Csv.new self
   end
+
+  def xlsx
+    @xlsx ||= Xlsx.new self
+  end
 end

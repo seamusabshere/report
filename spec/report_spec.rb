@@ -2,6 +2,8 @@
 # 日
 require 'report'
 
+require 'remote_table'
+
 class Translation < Struct.new(:language, :translation)
   class << self
     def all
@@ -72,14 +74,14 @@ class A4
 end
 class A5
   include Report
-  table 'Only English ways to say hello' do
+  table 'InEnglish' do
     body do
       rows :translations, ['English']
       column 'Language'
       column 'Translation'
     end
   end
-  table 'Only Russian ways to say hello' do
+  table 'InRussian' do
     body do
       rows :translations, ['Russian']
       column 'Language'
@@ -149,6 +151,60 @@ describe Report do
     end
     it "instance-evals column blocks against row objects" do
       t = ::CSV.read A6.new.csv.paths.first, :headers => :first_row
+      en = t[0]
+      ru = t[1]
+      en['Language'].should == 'English'
+      en['Forward'].should == 'Hello'
+      en['Backward'].should == 'Hello'.reverse
+      ru['Language'].should == 'Russian'
+      ru['Forward'].should == 'Здравствуйте'
+      ru['Backward'].should == 'Здравствуйте'.reverse
+    end
+  end
+
+  describe '#xlsx' do
+    it "writes all tables to the same file" do
+      hello = RemoteTable.new A1.new.xlsx.path, :headers => false
+      hello[0][0].should == 'World'
+    end
+    it "constructs a body out of rows and columns" do
+      how_to_say_hello = RemoteTable.new A2.new.xlsx.path, :headers => :first_row
+      how_to_say_hello[0]['Language'].should == 'English'
+      how_to_say_hello[0]['Translation'].should == 'Hello'
+      how_to_say_hello[1]['Language'].should == 'Russian'
+      how_to_say_hello[1]['Translation'].should == 'Здравствуйте'
+    end
+    it "puts a blank row between head and body" do
+      transl_with_head = RemoteTable.new A3.new.xlsx.path, :headers => false, :keep_blank_rows => true
+      transl_with_head[0][0].should == "Report type"
+      transl_with_head[0][1].should == "How to say hello in a few languages!"
+      transl_with_head[4][0].should == "Russian"
+      transl_with_head[4][1].should == 'Здравствуйте'
+    end
+    it "passes arguments on columns" do
+      t = RemoteTable.new A4.new.xlsx.path, :headers => :first_row
+      en = t[0]
+      ru = t[1]
+      en['Language'].should == 'English'
+      en['Forward'].should == 'Hello'
+      en['Backward'].should == 'Hello'.reverse
+      ru['Language'].should == 'Russian'
+      ru['Forward'].should == 'Здравствуйте'
+      ru['Backward'].should == 'Здравствуйте'.reverse
+    end
+    it "passes arguments on rows" do
+      path = A5.new.xlsx.path
+      en = RemoteTable.new(path, :headers => :first_row, :sheet => 'InEnglish').to_a
+      en.length.should == 1
+      en[0]['Language'].should == 'English'
+      en[0]['Translation'].should == 'Hello'
+      ru = RemoteTable.new(path, :headers => :first_row, :sheet => 'InRussian').to_a
+      ru.length.should == 1
+      ru[0]['Language'].should == 'Russian'
+      ru[0]['Translation'].should == 'Здравствуйте'
+    end
+    it "instance-evals column blocks against row objects" do
+      t = RemoteTable.new A6.new.xlsx.path, :headers => :first_row
       en = t[0]
       ru = t[1]
       en['Language'].should == 'English'
