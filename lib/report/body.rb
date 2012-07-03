@@ -11,8 +11,8 @@ module Report
       @columns = []
       instance_eval(&blk)
     end
-    def rows(method_id = nil)
-      @rows = Rows.new self, method_id
+    def rows(*args)
+      @rows = Rows.new(*([self]+args))
     end
     def column(*args)
       @columns << Column.new(*([self]+args))

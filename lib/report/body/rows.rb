@@ -3,12 +3,16 @@ module Report
     class Rows
       attr_reader :body
       attr_accessor :method_id
-      def initialize(body, method_id)
-        @body = body
-        @method_id = method_id
+      attr_accessor :args
+      def initialize(*args)
+        @body = args.shift
+        @method_id = args.shift
+        if args.last.is_a?(Array)
+          @args = args.last
+        end
       end
       def each(report, &blk)
-        report.send(method_id).each do |obj|
+        (args ? report.send(method_id, *args) : report.send(method_id)).each do |obj|
           blk.call obj
         end
       end

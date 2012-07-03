@@ -70,6 +70,26 @@ class A4
     Translation.all
   end
 end
+class A5
+  include Report
+  table 'Only English ways to say hello' do
+    body do
+      rows :translations, ['English']
+      column 'Language'
+      column 'Translation'
+    end
+  end
+  table 'Only Russian ways to say hello' do
+    body do
+      rows :translations, ['Russian']
+      column 'Language'
+      column 'Translation'
+    end
+  end
+  def translations(language)
+    Translation.all.select { |t| t.language == language }
+  end
+end
 
 describe Report do
   describe '#csv' do
@@ -101,6 +121,17 @@ describe Report do
       ru['Language'].should == 'Russian'
       ru['Forward'].should == 'Здравствуйте'
       ru['Backward'].should == 'Здравствуйте'.reverse
+    end
+    it "passes arguments on rows" do
+      en_path, ru_path = A5.new.csv.paths
+      en = ::CSV.read en_path, :headers => :first_row
+      en.length.should == 1
+      en[0]['Language'].should == 'English'
+      en[0]['Translation'].should == 'Hello'
+      ru = ::CSV.read ru_path, :headers => :first_row
+      ru.length.should == 1
+      ru[0]['Language'].should == 'Russian'
+      ru[0]['Translation'].should == 'Здравствуйте'
     end
   end
 end
