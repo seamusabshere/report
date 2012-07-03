@@ -11,6 +11,9 @@ class Translation < Struct.new(:language, :translation)
       ]
     end
   end
+  def backward
+    translation.reverse
+  end
 end
 
 class A1
@@ -53,6 +56,20 @@ class A3
     Translation.all
   end
 end
+class A4
+  include Report
+  table 'Translations and more' do
+    body do
+      rows :translations
+      column 'Language'
+      column 'Forward', :translation
+      column 'Backward'
+    end
+  end
+  def translations
+    Translation.all
+  end
+end
 
 describe Report do
   describe '#csv' do
@@ -73,6 +90,17 @@ describe Report do
       transl_with_head[0][1].should == "How to say hello in a few languages!"
       transl_with_head[4][0].should == "Russian"
       transl_with_head[4][1].should == 'Здравствуйте'
+    end
+    it "passes arguments on columns" do
+      t = ::CSV.read A4.new.csv.paths.first, :headers => :first_row
+      en = t[0]
+      ru = t[1]
+      en['Language'].should == 'English'
+      en['Forward'].should == 'Hello'
+      en['Backward'].should == 'Hello'.reverse
+      ru['Language'].should == 'Russian'
+      ru['Forward'].should == 'Здравствуйте'
+      ru['Backward'].should == 'Здравствуйте'.reverse
     end
   end
 end

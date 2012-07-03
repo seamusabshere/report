@@ -14,8 +14,8 @@ module Report
     def rows(method_id = nil)
       @rows = Rows.new self, method_id
     end
-    def column(name)
-      @columns << Column.new(self, name)
+    def column(*args)
+      @columns << Column.new(*([self]+args))
     end
     def each(report)
       yield columns.map(&:name)

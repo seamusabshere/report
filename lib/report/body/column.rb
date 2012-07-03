@@ -3,9 +3,12 @@ module Report
     class Column
       attr_reader :body
       attr_reader :name
-      def initialize(body, name)
-        @body = body
-        @name = name
+      attr_reader :method_id
+      def initialize(*args)
+        @body = args.shift
+        @name = args.shift
+        options = args.extract_options!
+        @method_id = options[:method_id] || args.shift
       end
       def read(obj)
         method_id = candidates.detect do |m|
@@ -18,7 +21,11 @@ module Report
       end
       private
       def candidates
-        [ name, name.underscore.gsub(/\W/, '_') ]
+        if method_id
+          [ method_id ]
+        else
+          [ name, name.underscore.gsub(/\W/, '_') ]
+        end
       end
     end
   end
