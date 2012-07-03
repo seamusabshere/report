@@ -3,23 +3,21 @@ module Report
     attr_reader :name
     def initialize(name, &blk)
       @name = name
-      @head = Head.new self
-      @body = Body.new self
       instance_eval(&blk)
     end
     def body(&blk)
-      @body.instance_eval(&blk)
+      @body ||= Body.new(self, &blk)
     end
     def head(&blk)
-      @head.instance_eval(&blk)
+      @head ||= Head.new(self, &blk)
     end
-    def each_row
+    def each(report)
       @head.each do |row|
         yield row
-      end
-      @body.each do |row|
+      end if defined?(@head)
+      @body.each(report) do |row|
         yield row
-      end
+      end if defined?(@body)
     end
   end
 end

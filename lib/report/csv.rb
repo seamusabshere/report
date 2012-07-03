@@ -14,7 +14,7 @@ module Report
     private
     def tables
       @tables ||= report.tables.map do |report_table|
-        Csv::Table.new report_table
+        Csv::Table.new self, report_table
       end
     end
   end

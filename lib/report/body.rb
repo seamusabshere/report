@@ -1,16 +1,22 @@
 module Report
   class Body
     attr_reader :table
-    def initialize(table)
+    attr_reader :columns
+    def initialize(table, &blk)
       @table = table
-      @rows = []
+      @columns = []
+      instance_eval(&blk)
     end
-    def row(*cells)
-      @rows << cells
+    def rows(method_id = nil)
+      @rows = Rows.new self, method_id
     end
-    def each
-      @rows.each do |row|
-        yield row
+    def column(name)
+      @columns << Column.new(self, name)
+    end
+    def each(report)
+      yield columns.map(&:name)
+      @rows.each(report) do |obj|
+        yield Row.new(self, obj)
       end
     end
   end

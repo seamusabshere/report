@@ -1,9 +1,10 @@
 module Report
   class Head
     attr_reader :table
-    def initialize(table)
+    def initialize(table, &blk)
       @table = table
       @rows = []
+      instance_eval(&blk)
     end
     def row(*cells)
       @rows << cells
