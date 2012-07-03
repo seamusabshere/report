@@ -14,8 +14,8 @@ module Report
     def rows(*args)
       @rows = Rows.new(*([self]+args))
     end
-    def column(*args)
-      @columns << Column.new(*([self]+args))
+    def column(*args, &blk)
+      @columns << Column.new(*([self]+args), &blk)
     end
     def each(report)
       yield columns.map(&:name)

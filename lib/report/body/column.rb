@@ -4,13 +4,20 @@ module Report
       attr_reader :body
       attr_reader :name
       attr_reader :method_id
-      def initialize(*args)
+      attr_reader :proc
+      def initialize(*args, &proc)
+        if block_given?
+          @proc = proc
+        end
         @body = args.shift
         @name = args.shift
         options = args.extract_options!
         @method_id = options[:method_id] || args.shift
       end
       def read(obj)
+        if @proc
+          return obj.instance_eval(&@proc)
+        end
         method_id = candidates.detect do |m|
           obj.respond_to?(m)
         end

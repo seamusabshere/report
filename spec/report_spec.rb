@@ -90,6 +90,20 @@ class A5
     Translation.all.select { |t| t.language == language }
   end
 end
+class A6
+  include Report
+  table 'Translations and more, again' do
+    body do
+      rows :translations
+      column 'Language'
+      column('Forward') { translation }
+      column('Backward') { translation.reverse }
+    end
+  end
+  def translations
+    Translation.all
+  end
+end
 
 describe Report do
   describe '#csv' do
@@ -132,6 +146,17 @@ describe Report do
       ru.length.should == 1
       ru[0]['Language'].should == 'Russian'
       ru[0]['Translation'].should == 'Здравствуйте'
+    end
+    it "instance-evals column blocks against row objects" do
+      t = ::CSV.read A6.new.csv.paths.first, :headers => :first_row
+      en = t[0]
+      ru = t[1]
+      en['Language'].should == 'English'
+      en['Forward'].should == 'Hello'
+      en['Backward'].should == 'Hello'.reverse
+      ru['Language'].should == 'Russian'
+      ru['Forward'].should == 'Здравствуйте'
+      ru['Backward'].should == 'Здравствуйте'.reverse
     end
   end
 end
