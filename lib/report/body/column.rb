@@ -17,22 +17,17 @@ module Report
       def read(obj)
         if @proc
           return obj.instance_eval(&@proc)
+        elsif method_id
+          obj.send method_id
+        elsif from_name = guesses.detect { |m| obj.respond_to?(m) }
+          obj.send from_name
+        else
+          raise "#{obj.inspect} does not respond to any of #{guesses.inspect}"
         end
-        method_id = candidates.detect do |m|
-          obj.respond_to?(m)
-        end
-        unless method_id
-          raise "#{obj.inspect} does not respond to any of #{candidates.inspect}"
-        end
-        obj.send method_id
       end
       private
-      def candidates
-        if method_id
-          [ method_id ]
-        else
-          [ name, name.underscore.gsub(/\W/, '_') ]
-        end
+      def guesses
+        [ name, name.underscore.gsub(/\W/, '_') ]
       end
     end
   end
