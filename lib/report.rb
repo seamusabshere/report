@@ -20,7 +20,9 @@ class Report
     attr_accessor :xlsx_format
 
     def table(table_name, &blk)
-      tables << Table.new(table_name, &blk)
+      t = Table.new table_name
+      t.instance_eval(&blk)
+      tables << t
     end
 
     def format_pdf(hsh)

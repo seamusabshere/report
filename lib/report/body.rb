@@ -6,10 +6,9 @@ class Report
   class Body
     attr_reader :table
     attr_reader :columns
-    def initialize(table, &blk)
+    def initialize(table)
       @table = table
       @columns = []
-      instance_eval(&blk)
     end
     def rows(*args)
       @rows = Rows.new(*([self]+args))

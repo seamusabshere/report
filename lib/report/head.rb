@@ -3,10 +3,9 @@ require 'report/head/row'
 class Report
   class Head
     attr_reader :table
-    def initialize(table, &blk)
+    def initialize(table)
       @table = table
       @rows = []
-      instance_eval(&blk)
     end
     def row(*cells)
       @rows << Row.new(self, cells)
