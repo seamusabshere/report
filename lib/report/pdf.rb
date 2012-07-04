@@ -32,7 +32,7 @@ module Report
 
           t = []
           table.each_body(report) { |row| t << row.to_a }
-          pdf.table(t, :width => (10*72), :header => true) if t.length > 0
+          pdf.table(t, body_table_options) if t.length > 0
         end
 
         pdf.number_pages "Page <page> of <total>", :at => [648, -2], :width => 100, :size => 10
@@ -55,6 +55,9 @@ module Report
         :left_margin => 36,
         :page_layout => :landscape,
       }
+    end
+    def body_table_options
+      {:width => (10*72), :header => true}
     end
     def stamp_path
       nil
