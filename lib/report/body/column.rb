@@ -48,7 +48,10 @@ class Report
       end
       private
       def guesses
-        [ name, name.underscore.gsub(/\W/, '_') ]
+        [
+          name.gsub(' ', '_'),
+          name.underscore.gsub(/[^\w\!\?]/, '_')
+        ]
       end
     end
   end

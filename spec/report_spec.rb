@@ -186,6 +186,27 @@ class B2 < Report
     Numero.all
   end
 end
+class Witness < Struct.new(:really_saw_it)
+  class << self
+    def all
+      [ new(true), new(false) ]
+    end
+  end
+  def did_you_really_see_it?
+    !!really_saw_it
+  end
+end
+class C1 < Report
+  table 'C1' do
+    body do
+      rows :witnesses
+      column 'Did you really see it?'
+    end
+  end
+  def witnesses
+    Witness.all
+  end
+end
 
 describe Report do
   describe '#csv' do
@@ -257,6 +278,10 @@ describe Report do
       how_to_say_hello[0]['Content'].should == 'Hello'
       how_to_say_hello[1]['Language'].should == 'Russian'
       how_to_say_hello[1]['Content'].should == 'Здравствуйте'
+    end
+    it "treats ? and ! as valid method characters" do
+      t = ::CSV.read C1.new.csv.paths.first, :headers => :first_row
+      t[0]['Did you really see it?'].should == 'true'
     end
   end
 
