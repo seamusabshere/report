@@ -16,19 +16,24 @@ require 'report/pdf'
 class Report
   class << self
     attr_accessor :tables
-    attr_accessor :formats
+    attr_accessor :pdf_format
+    attr_accessor :xlsx_format
 
     def table(table_name, &blk)
-      @tables << Table.new(table_name, &blk)
+      tables << Table.new(table_name, &blk)
     end
 
-    def format(format_name, &blk)
-      @formats[format_name] = blk
+    def format_pdf(hsh)
+      self.pdf_format = hsh
+    end
+
+    def format_xlsx(&blk)
+      self.xlsx_format = blk
     end
 
     def inherited(klass)
       klass.tables = []
-      klass.formats = {}
+      klass.pdf_format = {}
     end
   end
 
@@ -36,8 +41,12 @@ class Report
     self.class.tables
   end
 
-  def formats
-    self.class.formats
+  def pdf_format
+    self.class.pdf_format
+  end
+
+  def xlsx_format
+    self.class.xlsx_format
   end
 
   def csv

@@ -100,7 +100,7 @@ class A6 < Report
   end
 end
 class A7 < Report
-  format :xlsx do |xlsx|
+  format_xlsx do |xlsx|
     xlsx.header.right.contents = 'Corporate Reporting Program'
     xlsx.page_setup.top = 1.5
     xlsx.page_setup.header = 0
@@ -120,6 +120,28 @@ class Numero < Struct.new(:d_e_c_i_m_a_l, :m_o_n_e_y)
   end
 end
 class B1 < Report
+  table 'Numbers' do
+    body do
+      rows :numbers
+      column 'd_e_c_i_m_a_l', :type => :Decimal, :faded => true
+      column 'm_o_n_e_y', :type => :Currency
+    end
+  end
+  def numbers
+    Numero.all
+  end
+end
+class B2 < Report
+  format_pdf(
+    :document => { :page_layout => :landscape },
+    :head => {:width => (10*72)},
+    :body => {:width => (10*72), :header => true},
+    :font => {
+      :normal => File.expand_path('../../lib/report/pdf/DejaVuSansMono-Oblique.ttf', __FILE__),
+    },
+    :number_pages => ["Page <page> of <total>", {:at => [648, -2], :width => 100, :size => 10}],
+    :stamp => File.expand_path("../stamp.pdf", __FILE__)
+  )
   table 'Numbers' do
     body do
       rows :numbers
@@ -314,10 +336,11 @@ describe Report do
       stdout_utf8.should include('Здравствуйте')
       stdout_utf8.should include('Здравствуйте'.reverse)
     end
-    # it "accepts a formatter that works on the raw XlsxWriter::Document" do
-    #   path = A7.new.pdf.path
-    #   dir = UnixUtils.unzip path
-    #   File.read("#{dir}/xl/worksheets/sheet1.xml").should include('Corporate Reporting Program')
-    # end
+    it "accepts pdf formatting options, including the ability to stamp with pdftk" do
+      path = B2.new.pdf.path
+      child = POSIX::Spawn::Child.new('pdftotext', path, '-')
+      stdout_utf8 = child.out.force_encoding('UTF-8')
+      stdout_utf8.should include('Firefox')
+    end
   end
 end
