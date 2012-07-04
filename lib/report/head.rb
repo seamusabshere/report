@@ -1,6 +1,6 @@
 require 'report/head/row'
 
-module Report
+class Report
   class Head
     attr_reader :table
     def initialize(table, &blk)

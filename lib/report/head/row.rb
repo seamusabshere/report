@@ -1,4 +1,4 @@
-module Report
+class Report
   class Head
     class Row
       attr_reader :head

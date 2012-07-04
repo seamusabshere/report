@@ -1,6 +1,6 @@
 require 'fileutils'
 
-module Report
+class Report
   class Xlsx
     include Utils
     attr_reader :report

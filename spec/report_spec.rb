@@ -17,16 +17,14 @@ class Translation < Struct.new(:language, :translation)
   end
 end
 
-class A1
-  include Report
+class A1 < Report
   table 'Hello' do
     head do
       row 'World'
     end
   end
 end
-class A2
-  include Report
+class A2 < Report
   table 'How to say hello' do
     body do
       rows :translations
@@ -38,8 +36,7 @@ class A2
     Translation.all
   end
 end
-class A3
-  include Report
+class A3 < Report
   table 'Translations' do
     head do
       row 'Report type', :description
@@ -57,8 +54,7 @@ class A3
     Translation.all
   end
 end
-class A4
-  include Report
+class A4 < Report
   table 'Translations and more' do
     body do
       rows :translations
@@ -71,8 +67,7 @@ class A4
     Translation.all
   end
 end
-class A5
-  include Report
+class A5 < Report
   table 'InEnglish' do
     body do
       rows :translations, ['English']
@@ -91,8 +86,7 @@ class A5
     Translation.all.select { |t| t.language == language }
   end
 end
-class A6
-  include Report
+class A6 < Report
   table 'Translations and more, again' do
     body do
       rows :translations
@@ -105,8 +99,7 @@ class A6
     Translation.all
   end
 end
-class A7
-  include Report
+class A7 < Report
   format :xlsx do |xlsx|
     xlsx.header.right.contents = 'Corporate Reporting Program'
     xlsx.page_setup.top = 1.5
@@ -126,8 +119,7 @@ class Numero < Struct.new(:d_e_c_i_m_a_l, :m_o_n_e_y)
     end
   end
 end
-class B1
-  include Report
+class B1 < Report
   table 'Numbers' do
     body do
       rows :numbers

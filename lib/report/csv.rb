@@ -2,7 +2,7 @@ require 'csv'
 
 require 'report/csv/table'
 
-module Report
+class Report
   class Csv
     attr_reader :report
     def initialize(report)

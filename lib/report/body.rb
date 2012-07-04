@@ -2,7 +2,7 @@ require 'report/body/column'
 require 'report/body/row'
 require 'report/body/rows'
 
-module Report
+class Report
   class Body
     attr_reader :table
     attr_reader :columns

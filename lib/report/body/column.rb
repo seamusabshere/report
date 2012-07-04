@@ -1,4 +1,4 @@
-module Report
+class Report
   class Body
     class Column
       attr_reader :body

@@ -1,6 +1,6 @@
 require 'tmpdir'
 
-module Report
+class Report
   module Utils
     # stolen from https://github.com/seamusabshere/unix_utils
     def tmp_path(options = {})

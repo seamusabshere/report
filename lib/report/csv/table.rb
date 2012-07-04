@@ -1,4 +1,4 @@
-module Report
+class Report
   class Csv
     class Table < Struct.new(:parent, :table)
       include Report::Utils

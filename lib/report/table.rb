@@ -1,4 +1,4 @@
-module Report
+class Report
   class Table
     attr_reader :name
     def initialize(name, &blk)

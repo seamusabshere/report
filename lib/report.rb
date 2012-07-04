@@ -3,7 +3,6 @@ require 'active_support/core_ext'
 require 'report/version'
 require 'report/utils'
 
-require 'report/class_methods'
 require 'report/table'
 require 'report/filename'
 require 'report/formatter'
@@ -14,27 +13,31 @@ require 'report/xlsx'
 require 'report/csv'
 require 'report/pdf'
 
-module Report
-  def self.included(klass)
-    klass.extend ClassMethods
-  end
+class Report
+  class << self
+    attr_accessor :tables
+    attr_accessor :formats
 
-  def self.tables(class_name)
-    @tables ||= {}
-    @tables[class_name] ||= []
-  end
+    def table(table_name, &blk)
+      @tables << Table.new(table_name, &blk)
+    end
 
-  def self.formats(class_name)
-    @formats ||= {}
-    @formats[class_name] ||= {}
+    def format(format_name, &blk)
+      @formats[format_name] = blk
+    end
+
+    def inherited(klass)
+      klass.tables = []
+      klass.formats = {}
+    end
   end
 
   def tables
-    Report.tables self.class.name
+    self.class.tables
   end
 
   def formats
-    Report.formats self.class.name
+    self.class.formats
   end
 
   def csv
