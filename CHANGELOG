@@ -1,5 +1,9 @@
 unreleased
 
+* Bug fixes
+
+  * Properly handle true and false values in pdf and xlsx
+
 * Enhancements
 
   * If a column is named "Did you really see it?", try #Did_you_really_see_it? and #did_you_really_see_it? (previously we lost ? and ! characters)

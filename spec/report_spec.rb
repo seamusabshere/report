@@ -282,6 +282,7 @@ describe Report do
     it "treats ? and ! as valid method characters" do
       t = ::CSV.read C1.new.csv.paths.first, :headers => :first_row
       t[0]['Did you really see it?'].should == 'true'
+      t[1]['Did you really see it?'].should == 'false'
     end
   end
 
@@ -367,6 +368,12 @@ describe Report do
       FileUtils.rm_f path
       FileUtils.rm_rf dir
     end
+    it "treats ? and ! as valid method characters" do
+      path = C1.new.xlsx.path
+      t = RemoteTable.new path, :headers => :first_row
+      t[0]['Did you really see it?'].should == 'TRUE'
+      t[1]['Did you really see it?'].should == 'FALSE'
+    end
   end
 
   describe '#pdf' do
@@ -441,6 +448,13 @@ describe Report do
       child = POSIX::Spawn::Child.new('pdftotext', path, '-')
       stdout_utf8 = child.out.force_encoding('UTF-8')
       stdout_utf8.should include('Firefox')
+    end
+    it "treats ? and ! as valid method characters" do
+      t = C1.new.pdf.path
+      child = POSIX::Spawn::Child.new('pdftotext', t, '-')
+      stdout_utf8 = child.out.force_encoding('UTF-8')
+      stdout_utf8.should include('true')
+      stdout_utf8.should include('false')
     end
   end
 end

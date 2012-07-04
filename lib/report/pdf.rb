@@ -43,16 +43,16 @@ class Report
         pdf.font font_name
 
         report.class.tables.each do |table|
-          if table._head and (t = table._head.to_a(report)).length > 0
-            pdf.table(t, head)
+          if t = make(table._head)
+            pdf.table t, head
           end
 
           pdf.move_down 20
           pdf.text table.name, :style => :bold
           pdf.move_down 10
 
-          if table._body and (t = table._body.to_a(report)).length > 0
-            pdf.table(t, body)
+          if t = make(table._body)
+            pdf.table t, body
           end
         end
 
@@ -70,6 +70,23 @@ class Report
     end
 
     private
+
+    def make(src)
+      return unless src
+      memo = []
+      src.each(report) do |row|
+        converted = row.to_a.map do |cell|
+          case cell
+          when TrueClass, FalseClass
+            cell.to_s
+          else
+            cell
+          end
+        end
+        memo << converted
+      end
+      memo if memo.length > 0
+    end
 
     def font_name
       'MainFont'

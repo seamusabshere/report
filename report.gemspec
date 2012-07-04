@@ -17,7 +17,7 @@ Gem::Specification.new do |gem|
   gem.version       = Report::VERSION
 
   gem.add_runtime_dependency 'activesupport'
-  gem.add_runtime_dependency 'xlsx_writer'
+  gem.add_runtime_dependency 'xlsx_writer', '>=0.2.2'
   gem.add_runtime_dependency 'prawn'
   gem.add_runtime_dependency 'posix-spawn'
 

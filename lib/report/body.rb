@@ -39,10 +39,5 @@ class Report
         end
       end
     end
-    def to_a(report)
-      a = []
-      each(report) { |row| a << row.to_a }
-      a
-    end
   end
 end
