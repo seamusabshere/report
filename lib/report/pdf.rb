@@ -43,17 +43,17 @@ class Report
         pdf.font font_name
 
         report.class.tables.each do |table|
-          t = []
-          table.each_head(report) { |row| t << row.to_a }
-          pdf.table(t, head) if t.length > 0
+          if table._head and (t = table._head.to_a(report)).length > 0
+            pdf.table(t, head)
+          end
 
           pdf.move_down 20
           pdf.text table.name, :style => :bold
           pdf.move_down 10
 
-          t = []
-          table.each_body(report) { |row| t << row.to_a }
-          pdf.table(t, body) if t.length > 0
+          if table._body and (t = table._body.to_a(report)).length > 0
+            pdf.table(t, body)
+          end
         end
 
         pdf.number_pages(*number_pages)

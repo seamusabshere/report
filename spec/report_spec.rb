@@ -282,6 +282,14 @@ describe Report do
       FileUtils.rm_f path
       FileUtils.rm_rf dir
     end
+    it "automatically adds an autofilter" do
+      path = A2.new.xlsx.path
+      dir = UnixUtils.unzip path
+      xml = File.read("#{dir}/xl/worksheets/sheet1.xml")
+      xml.should include('autoFilter ref="A1:B1')
+      FileUtils.rm_f path
+      FileUtils.rm_rf dir
+    end
   end
 
   describe '#pdf' do

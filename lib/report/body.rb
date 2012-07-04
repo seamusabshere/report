@@ -18,10 +18,14 @@ class Report
       @columns << Column.new(*([self]+args), &blk)
     end
     def each(report)
-      yield columns.map(&:name)
       @rows.each(report) do |obj|
         yield Row.new(self, obj)
       end
+    end
+    def to_a(report)
+      a = []
+      each(report) { |row| a << row.to_a }
+      a
     end
   end
 end

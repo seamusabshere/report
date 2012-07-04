@@ -17,13 +17,30 @@ class Report
       end
       report.class.tables.each do |table|
         sheet = workbook.add_sheet table.name
-        table.each(report) do |row|
-          sheet.add_row(row.respond_to?(:to_hash) ? row.to_hash : row.to_a)
+        cursor = 1 # excel row numbers start at 1
+        if table._head
+          table._head.each(report) do |row|
+            sheet.add_row row.to_a
+            cursor += 1
+          end
+          sheet.add_row []
+          cursor += 1
+        end
+        if table._body
+          sheet.add_row table._body.columns.map(&:name)
+          table._body.each(report) do |row|
+            sheet.add_row row.to_hash
+          end
+          sheet.add_autofilter calculate_autofilter(table, cursor)
         end
       end
       FileUtils.mv workbook.path, tmp_path
       workbook.cleanup
       @path = tmp_path
+    end
+    private
+    def calculate_autofilter(table, cursor)
+      [ 'A', cursor, ':', XlsxWriter::Cell.excel_column_letter(table._body.columns.length-1), cursor ].join
     end
   end
 end

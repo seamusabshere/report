@@ -11,26 +11,11 @@ class Report
     def head(&blk)
       @head = Head.new(self, &blk)
     end
-    def each(report)
-      if defined?(@head)
-        @head.each(report) do |row|
-          yield row
-        end
-        yield [] # blank row
-      end
-      @body.each(report) do |row|
-        yield row
-      end if defined?(@body)
+    def _head
+      @head
     end
-    def each_head(report)
-      @head.each(report) do |row|
-        yield row
-      end if defined?(@head)
-    end
-    def each_body(report)
-      @body.each(report) do |row|
-        yield row
-      end if defined?(@body)
+    def _body
+      @body
     end
   end
 end
