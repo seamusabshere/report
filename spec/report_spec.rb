@@ -6,14 +6,14 @@ require 'remote_table'
 require 'unix_utils'
 require 'posix/spawn'
 
-class Translation < Struct.new(:language, :translation)
+class Translation < Struct.new(:language, :content)
   class << self
     def all
       [ new('English', 'Hello'), new('Russian', 'Здравствуйте') ]
     end
   end
   def backward
-    translation.reverse
+    content.reverse
   end
 end
 
@@ -29,7 +29,7 @@ class A2 < Report
     body do
       rows :translations
       column 'Language'
-      column 'Translation'
+      column 'Content'
     end
   end
   def translations
@@ -44,7 +44,7 @@ class A3 < Report
     body do
       rows :translations
       column 'Language'
-      column 'Translation'
+      column 'Content'
     end
   end
   def description
@@ -59,7 +59,7 @@ class A4 < Report
     body do
       rows :translations
       column 'Language'
-      column 'Forward', :translation
+      column 'Forward', :content
       column 'Backward'
     end
   end
@@ -72,14 +72,14 @@ class A5 < Report
     body do
       rows :translations, ['English']
       column 'Language'
-      column 'Translation'
+      column 'Content'
     end
   end
   table 'InRussian' do
     body do
       rows :translations, ['Russian']
       column 'Language'
-      column 'Translation'
+      column 'Content'
     end
   end
   def translations(language)
@@ -91,8 +91,8 @@ class A6 < Report
     body do
       rows :translations
       column 'Language'
-      column('Forward') { translation }
-      column('Backward') { translation.reverse }
+      column('Forward') { content }
+      column('Backward') { content.reverse }
     end
   end
   def translations
@@ -110,6 +110,19 @@ class A7 < Report
     head do
       row 'World'
     end
+  end
+end
+class A8 < Report
+  table 'A8' do
+    body do
+      rows :translations
+      column 'Language'
+      column('ClassForward') { |report, translation| [report.class.name, translation.content].join }
+      column('ClassBackward') { |report, translation| [report.class.name.reverse, translation.content.reverse].join }
+    end
+  end
+  def translations
+    Translation.all
   end
 end
 class Numero < Struct.new(:d_e_c_i_m_a_l, :m_o_n_e_y)
@@ -169,9 +182,9 @@ describe Report do
     it "constructs a body out of rows and columns" do
       how_to_say_hello = ::CSV.read A2.new.csv.paths.first, :headers => :first_row
       how_to_say_hello[0]['Language'].should == 'English'
-      how_to_say_hello[0]['Translation'].should == 'Hello'
+      how_to_say_hello[0]['Content'].should == 'Hello'
       how_to_say_hello[1]['Language'].should == 'Russian'
-      how_to_say_hello[1]['Translation'].should == 'Здравствуйте'
+      how_to_say_hello[1]['Content'].should == 'Здравствуйте'
     end
     it "puts a blank row between head and body" do
       transl_with_head = ::CSV.read A3.new.csv.paths.first, :headers => false
@@ -196,13 +209,13 @@ describe Report do
       en = ::CSV.read en_path, :headers => :first_row
       en.length.should == 1
       en[0]['Language'].should == 'English'
-      en[0]['Translation'].should == 'Hello'
+      en[0]['Content'].should == 'Hello'
       ru = ::CSV.read ru_path, :headers => :first_row
       ru.length.should == 1
       ru[0]['Language'].should == 'Russian'
-      ru[0]['Translation'].should == 'Здравствуйте'
+      ru[0]['Content'].should == 'Здравствуйте'
     end
-    it "instance-evals column blocks against row objects" do
+    it "instance-evals column blocks against row objects if arity is 0" do
       t = ::CSV.read A6.new.csv.paths.first, :headers => :first_row
       en = t[0]
       ru = t[1]
@@ -212,6 +225,17 @@ describe Report do
       ru['Language'].should == 'Russian'
       ru['Forward'].should == 'Здравствуйте'
       ru['Backward'].should == 'Здравствуйте'.reverse
+    end
+    it "calls column blocks with |report, row_obj| if arity == 2" do
+      t = ::CSV.read A8.new.csv.paths.first, :headers => :first_row
+      en = t[0]
+      ru = t[1]
+      en['Language'].should == 'English'
+      en['ClassForward'].should == 'A8Hello'
+      en['ClassBackward'].should == ['A8'.reverse, 'Hello'.reverse].join
+      ru['Language'].should == 'Russian'
+      ru['ClassForward'].should == 'A8Здравствуйте'
+      ru['ClassBackward'].should == ['A8'.reverse, 'Здравствуйте'.reverse].join
     end
   end
 
@@ -223,9 +247,9 @@ describe Report do
     it "constructs a body out of rows and columns" do
       how_to_say_hello = RemoteTable.new A2.new.xlsx.path, :headers => :first_row
       how_to_say_hello[0]['Language'].should == 'English'
-      how_to_say_hello[0]['Translation'].should == 'Hello'
+      how_to_say_hello[0]['Content'].should == 'Hello'
       how_to_say_hello[1]['Language'].should == 'Russian'
-      how_to_say_hello[1]['Translation'].should == 'Здравствуйте'
+      how_to_say_hello[1]['Content'].should == 'Здравствуйте'
     end
     it "puts a blank row between head and body" do
       transl_with_head = RemoteTable.new A3.new.xlsx.path, :headers => false, :keep_blank_rows => true
@@ -250,11 +274,11 @@ describe Report do
       en = RemoteTable.new(path, :headers => :first_row, :sheet => 'InEnglish').to_a
       en.length.should == 1
       en[0]['Language'].should == 'English'
-      en[0]['Translation'].should == 'Hello'
+      en[0]['Content'].should == 'Hello'
       ru = RemoteTable.new(path, :headers => :first_row, :sheet => 'InRussian').to_a
       ru.length.should == 1
       ru[0]['Language'].should == 'Russian'
-      ru[0]['Translation'].should == 'Здравствуйте'
+      ru[0]['Content'].should == 'Здравствуйте'
     end
     it "instance-evals column blocks against row objects" do
       t = RemoteTable.new A6.new.xlsx.path, :headers => :first_row

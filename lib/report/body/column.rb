@@ -4,12 +4,12 @@ class Report
       attr_reader :body
       attr_reader :name
       attr_reader :method_id
-      attr_reader :proc
+      attr_reader :blk
       attr_reader :faded
       attr_reader :row_options
-      def initialize(*args, &proc)
+      def initialize(*args, &blk)
         if block_given?
-          @proc = proc
+          @blk = blk
         end
         @body = args.shift
         @name = args.shift
@@ -18,9 +18,16 @@ class Report
         @faded = options.delete(:faded)
         @row_options = options
       end
-      def read(obj)
-        if @proc
-          obj.instance_eval(&@proc)
+      def read(report, obj)
+        if blk
+          case blk.arity
+          when 0
+            obj.instance_eval(&blk)
+          when 2
+            blk.call report, obj
+          else
+            raise "column block should have 0 or 2 arguments"
+          end
         elsif method_id
           obj.send method_id
         elsif from_name = guesses.detect { |m| obj.respond_to?(m) }
@@ -29,8 +36,8 @@ class Report
           raise "#{obj.inspect} does not respond to any of #{guesses.inspect}"
         end
       end
-      def read_with_options(obj)
-        v = read obj
+      def read_with_options(report, obj)
+        v = read report, obj
         f = case faded
         when Symbol
           obj.send faded

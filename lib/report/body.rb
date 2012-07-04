@@ -19,7 +19,7 @@ class Report
     end
     def each(report)
       @rows.each(report) do |obj|
-        yield Row.new(self, obj)
+        yield Row.new(self, report, obj)
       end
     end
     def to_a(report)
