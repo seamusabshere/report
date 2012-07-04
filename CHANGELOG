@@ -1,0 +1,9 @@
+unreleased
+
+* Enhancements
+
+  * If a column block takes 2 args (arity = 2), pass it report and row obj. This is useful when each row is calculated using (1) the row object and (2) something defined only on the report instance itself.
+
+0.0.1 / 2012-07-04
+
+Initial release!
