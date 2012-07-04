@@ -17,8 +17,10 @@ Gem::Specification.new do |gem|
 
   gem.add_runtime_dependency 'activesupport'
   gem.add_runtime_dependency 'xlsx_writer'
+  gem.add_runtime_dependency 'prawn'
 
   gem.add_development_dependency 'rspec'
   gem.add_development_dependency 'remote_table'
   gem.add_development_dependency 'unix_utils'
+  gem.add_development_dependency 'posix-spawn'
 end

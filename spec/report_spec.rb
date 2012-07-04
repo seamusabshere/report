@@ -4,6 +4,7 @@ require 'report'
 
 require 'remote_table'
 require 'unix_utils'
+require 'posix/spawn'
 
 class Translation < Struct.new(:language, :translation)
   class << self
@@ -236,5 +237,70 @@ describe Report do
       dir = UnixUtils.unzip path
       File.read("#{dir}/xl/worksheets/sheet1.xml").should include('Corporate Reporting Program')
     end
+  end
+
+  describe '#pdf' do
+    it "writes all tables to the same file" do
+      hello = A1.new.pdf.path
+      child = POSIX::Spawn::Child.new('pdftotext', hello, '-')
+      stdout_utf8 = child.out.force_encoding('UTF-8')
+      stdout_utf8.should include('World')
+    end
+    it "constructs a body out of rows and columns" do
+      how_to_say_hello = A2.new.pdf.path
+      child = POSIX::Spawn::Child.new('pdftotext', how_to_say_hello, '-')
+      stdout_utf8 = child.out.force_encoding('UTF-8')
+      stdout_utf8.should include('English')
+      stdout_utf8.should include('Hello')
+      stdout_utf8.should include('Russian')
+      stdout_utf8.should include('Здравствуйте')
+    end
+    it "puts a blank row between head and body" do
+      transl_with_head = A3.new.pdf.path
+      child = POSIX::Spawn::Child.new('pdftotext', transl_with_head, '-')
+      stdout_utf8 = child.out.force_encoding('UTF-8')
+      stdout_utf8.should include("Report type")
+      stdout_utf8.should include("How to say hello in a few languages!")
+      stdout_utf8.should include('Russian')
+      stdout_utf8.should include('Здравствуйте')
+    end
+    it "passes arguments on columns" do
+      t = A4.new.pdf.path
+      child = POSIX::Spawn::Child.new('pdftotext', t, '-')
+      stdout_utf8 = child.out.force_encoding('UTF-8')
+      stdout_utf8.should include('English')
+      stdout_utf8.should include('Hello')
+      stdout_utf8.should include('Hello'.reverse)
+      stdout_utf8.should include('Russian')
+      stdout_utf8.should include('Здравствуйте')
+      stdout_utf8.should include('Здравствуйте'.reverse)
+    end
+    it "passes arguments on rows" do
+      path = A5.new.pdf.path
+      child = POSIX::Spawn::Child.new('pdftotext', path, '-')
+      stdout_utf8 = child.out.force_encoding('UTF-8')
+      stdout_utf8.should include('InEnglish')
+      stdout_utf8.should include('InRussian')
+      stdout_utf8.should include('English')
+      stdout_utf8.should include('Hello')
+      stdout_utf8.should include('Russian')
+      stdout_utf8.should include('Здравствуйте')
+    end
+    it "instance-evals column blocks against row objects" do
+      t = A6.new.pdf.path
+      child = POSIX::Spawn::Child.new('pdftotext', t, '-')
+      stdout_utf8 = child.out.force_encoding('UTF-8')
+      stdout_utf8.should include('English')
+      stdout_utf8.should include('Hello')
+      stdout_utf8.should include('Hello'.reverse)
+      stdout_utf8.should include('Russian')
+      stdout_utf8.should include('Здравствуйте')
+      stdout_utf8.should include('Здравствуйте'.reverse)
+    end
+    # it "accepts a formatter that works on the raw XlsxWriter::Document" do
+    #   path = A7.new.pdf.path
+    #   dir = UnixUtils.unzip path
+    #   File.read("#{dir}/xl/worksheets/sheet1.xml").should include('Corporate Reporting Program')
+    # end
   end
 end

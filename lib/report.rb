@@ -12,6 +12,7 @@ require 'report/head'
 require 'report/body'
 require 'report/xlsx'
 require 'report/csv'
+require 'report/pdf'
 
 module Report
   def self.included(klass)
@@ -42,5 +43,9 @@ module Report
 
   def xlsx
     @xlsx ||= Xlsx.new self
+  end
+
+  def pdf
+    @pdf ||= Pdf.new self
   end
 end
