@@ -5,6 +5,7 @@ class Report
       attr_reader :name
       attr_reader :method_id
       attr_reader :proc
+      attr_reader :faded
       attr_reader :row_options
       def initialize(*args, &proc)
         if block_given?
@@ -14,6 +15,7 @@ class Report
         @name = args.shift
         options = args.extract_options!
         @method_id = options.delete(:method_id) || args.shift
+        @faded = options.delete(:faded)
         @row_options = options
       end
       def read(obj)
@@ -26,6 +28,16 @@ class Report
         else
           raise "#{obj.inspect} does not respond to any of #{guesses.inspect}"
         end
+      end
+      def read_with_options(obj)
+        v = read obj
+        f = case faded
+        when Symbol
+          obj.send faded
+        else
+          faded
+        end
+        { :value => v, :faded => f }.merge row_options
       end
       private
       def guesses

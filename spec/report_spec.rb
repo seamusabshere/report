@@ -118,13 +118,19 @@ class Numero < Struct.new(:d_e_c_i_m_a_l, :m_o_n_e_y)
       [ new(9.9, 2.5) ]
     end
   end
+  def always_true
+    true
+  end
+  def always_false
+    false
+  end
 end
 class B1 < Report
   table 'Numbers' do
     body do
       rows :numbers
-      column 'd_e_c_i_m_a_l', :type => :Decimal, :faded => true
-      column 'm_o_n_e_y', :type => :Currency
+      column 'd_e_c_i_m_a_l', :type => :Decimal, :faded => :always_true
+      column 'm_o_n_e_y', :type => :Currency, :faded => :always_false
     end
   end
   def numbers

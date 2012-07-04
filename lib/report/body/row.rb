@@ -12,7 +12,7 @@ class Report
       end
       def to_hash
         body.columns.map do |column|
-          { :value => column.read(obj) }.merge column.row_options
+          column.read_with_options obj
         end
       end
     end
