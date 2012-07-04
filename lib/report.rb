@@ -37,18 +37,6 @@ class Report
     end
   end
 
-  def tables
-    self.class.tables
-  end
-
-  def pdf_format
-    self.class.pdf_format
-  end
-
-  def xlsx_format
-    self.class.xlsx_format
-  end
-
   def csv
     @csv ||= Csv.new self
   end

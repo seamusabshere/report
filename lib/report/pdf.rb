@@ -42,7 +42,7 @@ class Report
         pdf.font_families.update(font_name => font)
         pdf.font font_name
 
-        report.tables.each do |table|
+        report.class.tables.each do |table|
           t = []
           table.each_head(report) { |row| t << row.to_a }
           pdf.table(t, head) if t.length > 0
@@ -76,27 +76,27 @@ class Report
     end
     
     def font
-      DEFAULT_FONT.merge report.pdf_format.fetch(:font, {})
+      DEFAULT_FONT.merge report.class.pdf_format.fetch(:font, {})
     end
     
     def document
-      DEFAULT_DOCUMENT.merge report.pdf_format.fetch(:document, {})
+      DEFAULT_DOCUMENT.merge report.class.pdf_format.fetch(:document, {})
     end
 
     def head
-      DEFAULT_HEAD.merge report.pdf_format.fetch(:head, {})
+      DEFAULT_HEAD.merge report.class.pdf_format.fetch(:head, {})
     end
 
     def body
-      DEFAULT_BODY.merge report.pdf_format.fetch(:body, {})
+      DEFAULT_BODY.merge report.class.pdf_format.fetch(:body, {})
     end
 
     def stamp
-      report.pdf_format[:stamp]
+      report.class.pdf_format[:stamp]
     end
 
     def number_pages
-      report.pdf_format.fetch :number_pages, DEFAULT_NUMBER_PAGES
+      report.class.pdf_format.fetch :number_pages, DEFAULT_NUMBER_PAGES
     end
   end
 end
