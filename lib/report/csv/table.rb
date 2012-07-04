@@ -7,7 +7,7 @@ module Report
         tmp_path = tmp_path(:hint => table.name, :extname => '.csv')
         File.open(tmp_path, 'wb') do |f|
           table.each(parent.report) do |row|
-            Csv::Table::Row.new(row).write_to(f)
+            f.write row.to_a.to_csv
           end
         end
         @path = tmp_path
@@ -15,5 +15,3 @@ module Report
     end
   end
 end
-
-require 'report/csv/table/row'
