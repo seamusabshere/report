@@ -5,6 +5,7 @@ module Report
       attr_reader :name
       attr_reader :method_id
       attr_reader :proc
+      attr_reader :row_options
       def initialize(*args, &proc)
         if block_given?
           @proc = proc
@@ -12,7 +13,8 @@ module Report
         @body = args.shift
         @name = args.shift
         options = args.extract_options!
-        @method_id = options[:method_id] || args.shift
+        @method_id = options.delete(:method_id) || args.shift
+        @row_options = options
       end
       def read(obj)
         if @proc

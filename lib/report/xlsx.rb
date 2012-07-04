@@ -18,7 +18,7 @@ module Report
       report.tables.each do |table|
         sheet = workbook.add_sheet table.name
         table.each(report) do |row|
-          sheet.add_row row.to_a
+          sheet.add_row(row.respond_to?(:to_hash) ? row.to_hash : row.to_a)
         end
       end
       FileUtils.mv workbook.path, tmp_path

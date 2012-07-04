@@ -9,10 +9,7 @@ require 'posix/spawn'
 class Translation < Struct.new(:language, :translation)
   class << self
     def all
-      [
-        Translation.new('English', 'Hello'),
-        Translation.new('Russian', 'Здравствуйте')
-      ]
+      [ new('English', 'Hello'), new('Russian', 'Здравствуйте') ]
     end
   end
   def backward
@@ -110,18 +107,36 @@ class A6
 end
 class A7
   include Report
-  
   format :xlsx do |xlsx|
     xlsx.header.right.contents = 'Corporate Reporting Program'
     xlsx.page_setup.top = 1.5
     xlsx.page_setup.header = 0
     xlsx.page_setup.footer = 0
   end
-
   table 'Hello' do
     head do
       row 'World'
     end
+  end
+end
+class Numero < Struct.new(:d_e_c_i_m_a_l, :m_o_n_e_y)
+  class << self
+    def all
+      [ new(9.9, 2.5) ]
+    end
+  end
+end
+class B1
+  include Report
+  table 'Numbers' do
+    body do
+      rows :numbers
+      column 'd_e_c_i_m_a_l', :type => :Decimal, :faded => true
+      column 'm_o_n_e_y', :type => :Currency
+    end
+  end
+  def numbers
+    Numero.all
   end
 end
 
@@ -236,6 +251,16 @@ describe Report do
       path = A7.new.xlsx.path
       dir = UnixUtils.unzip path
       File.read("#{dir}/xl/worksheets/sheet1.xml").should include('Corporate Reporting Program')
+      FileUtils.rm_f path
+    end
+    it "allows setting cell options" do
+      path = B1.new.xlsx.path
+      dir = UnixUtils.unzip path
+      xml = File.read("#{dir}/xl/worksheets/sheet1.xml")
+      xml.should match(/s="2".*2.5/) # Currency
+      xml.should match(/s="9".*9.9/) # faded Decimal
+      FileUtils.rm_f path
+      FileUtils.rm_rf dir
     end
   end
 

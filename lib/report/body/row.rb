@@ -8,8 +8,11 @@ module Report
         @obj = obj
       end
       def to_a
+        body.columns.map { |column| column.read(obj) }
+      end
+      def to_hash
         body.columns.map do |column|
-          column.read obj
+          { :value => column.read(obj) }.merge column.row_options
         end
       end
     end
