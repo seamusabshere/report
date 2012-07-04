@@ -9,7 +9,7 @@ class Report
       :bold_italic => File.expand_path('../pdf/DejaVuSansMono-BoldOblique.ttf', __FILE__),
     }
     DEFAULT_DOCUMENT = {
-      :top_margin => 118,
+      :top_margin => 72,
       :right_margin => 36,
       :bottom_margin => 72,
       :left_margin => 36,
@@ -42,16 +42,20 @@ class Report
         pdf.font_families.update(font_name => font)
         pdf.font font_name
 
+        first = true
         report.class.tables.each do |table|
+          if first
+            first = false
+          else
+            pdf.move_down 20
+          end
           if t = make(table._head)
             pdf.table t, head
+            pdf.move_down 20
           end
-
-          pdf.move_down 20
           pdf.text table.name, :style => :bold
-          pdf.move_down 10
-
           if t = make(table._body)
+            pdf.move_down 10
             pdf.table t, body
           end
         end
