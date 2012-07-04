@@ -16,7 +16,7 @@ module Report
       end
       def read(obj)
         if @proc
-          return obj.instance_eval(&@proc)
+          obj.instance_eval(&@proc)
         elsif method_id
           obj.send method_id
         elsif from_name = guesses.detect { |m| obj.respond_to?(m) }
