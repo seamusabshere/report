@@ -1,5 +1,3 @@
-require 'report/head/row'
-
 class Report
   class Head
     attr_reader :table
@@ -8,11 +6,24 @@ class Report
       @rows = []
     end
     def row(*cells)
-      @rows << Row.new(self, cells)
+      @rows << cells
     end
     def each(report)
       @rows.each do |row|
-        yield row.read(report)
+        actual = row.map do |cell|
+          case cell
+          when String
+            cell
+          when Symbol
+            unless report.respond_to?(cell)
+              raise "#{report.inspect} doesn't respond to #{cell.inspect}"
+            end
+            report.send cell
+          else
+            raise "must pass String or Symbol to head row"
+          end
+        end
+        yield actual
       end
     end
     def to_a(report)
