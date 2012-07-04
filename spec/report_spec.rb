@@ -125,6 +125,20 @@ class A8 < Report
     Translation.all
   end
 end
+class A9 < Report
+  table 'MemorySafe' do
+    body do
+      rows :translations
+      column 'Language'
+      column 'Content'
+    end
+  end
+  def translations
+    Translation.all.each do |translation|
+      yield translation
+    end
+  end
+end
 class Numero < Struct.new(:d_e_c_i_m_a_l, :m_o_n_e_y)
   class << self
     def all
@@ -237,6 +251,13 @@ describe Report do
       ru['ClassForward'].should == 'A8Здравствуйте'
       ru['ClassBackward'].should == ['A8'.reverse, 'Здравствуйте'.reverse].join
     end
+    it "can have row objects yield to it one by one" do
+      how_to_say_hello = ::CSV.read A9.new.csv.paths.first, :headers => :first_row
+      how_to_say_hello[0]['Language'].should == 'English'
+      how_to_say_hello[0]['Content'].should == 'Hello'
+      how_to_say_hello[1]['Language'].should == 'Russian'
+      how_to_say_hello[1]['Content'].should == 'Здравствуйте'
+    end
   end
 
   describe '#xlsx' do
@@ -290,6 +311,13 @@ describe Report do
       ru['Language'].should == 'Russian'
       ru['Forward'].should == 'Здравствуйте'
       ru['Backward'].should == 'Здравствуйте'.reverse
+    end
+    it "can have row objects yield to it one by one" do
+      how_to_say_hello = RemoteTable.new A9.new.xlsx.path, :headers => :first_row
+      how_to_say_hello[0]['Language'].should == 'English'
+      how_to_say_hello[0]['Content'].should == 'Hello'
+      how_to_say_hello[1]['Language'].should == 'Russian'
+      how_to_say_hello[1]['Content'].should == 'Здравствуйте'
     end
     it "accepts a formatter that works on the raw XlsxWriter::Document" do
       path = A7.new.xlsx.path
@@ -373,6 +401,15 @@ describe Report do
       stdout_utf8.should include('Russian')
       stdout_utf8.should include('Здравствуйте')
       stdout_utf8.should include('Здравствуйте'.reverse)
+    end
+    it "can have row objects yield to it one by one" do
+      t = A9.new.pdf.path
+      child = POSIX::Spawn::Child.new('pdftotext', t, '-')
+      stdout_utf8 = child.out.force_encoding('UTF-8')
+      stdout_utf8.should include('English')
+      stdout_utf8.should include('Hello')
+      stdout_utf8.should include('Russian')
+      stdout_utf8.should include('Здравствуйте')
     end
     it "accepts pdf formatting options, including the ability to stamp with pdftk" do
       path = B2.new.pdf.path
