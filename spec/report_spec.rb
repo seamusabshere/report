@@ -209,6 +209,21 @@ class C1 < Report
 end
 
 describe Report do
+  it "cleans up if asked" do
+    r = A1.new
+    mess = []
+    mess += r.csv.paths
+    mess << r.xlsx.path
+    mess << r.pdf.path
+    mess.each do |path|
+      File.exist?(path).should == true
+    end
+    r.cleanup
+    mess.each do |path|
+      File.exist?(path).should == false
+    end
+  end
+
   describe '#csv' do
     it "writes each table to a separate file" do
       hello = ::CSV.read A1.new.csv.paths.first

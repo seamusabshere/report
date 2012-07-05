@@ -21,6 +21,9 @@ class Report
         end
         @path = tmp_path
       end
+      def cleanup
+        safe_delete @path if @path
+      end
     end
   end
 end

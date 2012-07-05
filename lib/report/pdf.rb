@@ -73,6 +73,10 @@ class Report
       @path = tmp_path
     end
 
+    def cleanup
+      safe_delete @path if @path
+    end
+
     private
 
     def make(src)

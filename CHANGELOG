@@ -1,3 +1,9 @@
+unreleased
+
+* Enhancements
+
+  * Provide Report#cleanup to remove tmp files
+
 0.0.2 / 2012-07-04
 
 * Bug fixes

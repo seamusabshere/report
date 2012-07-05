@@ -3,10 +3,13 @@ require 'fileutils'
 class Report
   class Xlsx
     include Utils
+    
     attr_reader :report
+    
     def initialize(report)
       @report = report
     end
+
     def path
       return @path if defined?(@path)
       require 'xlsx_writer'
@@ -38,6 +41,11 @@ class Report
       workbook.cleanup
       @path = tmp_path
     end
+
+    def cleanup
+      safe_delete @path if @path
+    end
+
     private
     def calculate_autofilter(table, cursor)
       [ 'A', cursor, ':', XlsxWriter::Cell.excel_column_letter(table._body.columns.length-1), cursor ].join

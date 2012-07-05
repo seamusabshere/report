@@ -50,4 +50,10 @@ class Report
   def pdf
     @pdf ||= Pdf.new self
   end
+
+  def cleanup
+    @csv.try :cleanup
+    @xlsx.try :cleanup
+    @pdf.try :cleanup
+  end
 end

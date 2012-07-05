@@ -11,6 +11,9 @@ class Report
     def paths
       tables.map { |table| table.path }
     end
+    def cleanup
+      tables.each { |table| table.cleanup }
+    end
     private
     def tables
       @tables ||= report.class.tables.map do |report_table|
