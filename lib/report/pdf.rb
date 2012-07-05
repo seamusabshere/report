@@ -40,7 +40,7 @@ class Report
       Prawn::Document.generate(tmp_path, document) do |pdf|
         
         pdf.font_families.update(font_name => font)
-        pdf.font font_name
+        pdf.font font_name, :size => 10
 
         first = true
         report.class.tables.each do |table|
