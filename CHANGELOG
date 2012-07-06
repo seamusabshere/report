@@ -1,5 +1,9 @@
 unreleased
 
+* Bug fixes
+
+  * Show column names on table bodies in pdf format
+
 * Enhancements
 
   * Provide Report#cleanup to remove tmp files

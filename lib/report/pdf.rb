@@ -49,12 +49,12 @@ class Report
           else
             pdf.move_down 20
           end
-          if t = make(table._head)
+          if t = make_head(table._head)
             pdf.table t, head
             pdf.move_down 20
           end
           pdf.text table.name, :style => :bold
-          if t = make(table._body)
+          if t = make_body(table._body)
             pdf.move_down 10
             pdf.table t, body
           end
@@ -79,21 +79,34 @@ class Report
 
     private
 
-    def make(src)
+    def make_head(src)
       return unless src
       memo = []
       src.each(report) do |row|
-        converted = row.to_a.map do |cell|
-          case cell
-          when TrueClass, FalseClass
-            cell.to_s
-          else
-            cell
-          end
-        end
-        memo << converted
+        memo << convert_row(row)
       end
       memo if memo.length > 0
+    end
+
+    def make_body(src)
+      return unless src
+      memo = []
+      memo << src.columns.map(&:name)
+      src.each(report) do |row|
+        memo << convert_row(row)
+      end
+      memo if memo.length > 0
+    end
+
+    def convert_row(row)
+      row.to_a.map do |cell|
+        case cell
+        when TrueClass, FalseClass
+          cell.to_s
+        else
+          cell
+        end
+      end
     end
 
     def font_name

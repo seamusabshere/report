@@ -398,10 +398,12 @@ describe Report do
       stdout_utf8 = child.out.force_encoding('UTF-8')
       stdout_utf8.should include('World')
     end
-    it "constructs a body out of rows and columns" do
+    it "constructs a body out of head rows and body rows and column names" do
       how_to_say_hello = A2.new.pdf.path
       child = POSIX::Spawn::Child.new('pdftotext', how_to_say_hello, '-')
       stdout_utf8 = child.out.force_encoding('UTF-8')
+      stdout_utf8.should include('Language')
+      stdout_utf8.should include('Content')
       stdout_utf8.should include('English')
       stdout_utf8.should include('Hello')
       stdout_utf8.should include('Russian')
