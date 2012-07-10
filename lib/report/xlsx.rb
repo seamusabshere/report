@@ -34,6 +34,7 @@ class Report
           table._body.each(report) do |row|
             sheet.add_row row.to_hash
           end
+          sheet.freeze_top_left = calculate_top_left(cursor)
           sheet.add_autofilter calculate_autofilter(table, cursor)
         end
       end
@@ -47,6 +48,9 @@ class Report
     end
 
     private
+    def calculate_top_left(cursor)
+      [ 'A', cursor+1 ].join
+    end
     def calculate_autofilter(table, cursor)
       [ 'A', cursor, ':', XlsxWriter::Cell.excel_column_letter(table._body.columns.length-1), cursor ].join
     end

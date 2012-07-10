@@ -313,6 +313,12 @@ describe Report do
       how_to_say_hello[1]['Language'].should == 'Russian'
       how_to_say_hello[1]['Content'].should == 'Здравствуйте'
     end
+    it "freezes the pane under the first row of the body" do
+      path = UnixUtils.unzip A2.new.xlsx.path
+      xml = File.read("#{path}/xl/worksheets/sheet1.xml")
+      xml.should include('topLeftCell="A2"')
+      xml.should include('ySplit="1"')
+    end
     it "puts a blank row between head and body" do
       transl_with_head = RemoteTable.new A3.new.xlsx.path, :headers => false, :keep_blank_rows => true
       transl_with_head[0][0].should == "Report type"
