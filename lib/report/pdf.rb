@@ -18,7 +18,8 @@ class Report
     DEFAULT_HEAD = {}
     DEFAULT_BODY = {
       :width => (10*72),
-      :header => true
+      :header => true,
+      :cell_style => { :inline_format => true },
     }
     DEFAULT_NUMBER_PAGES = [
       'Page <page> of <total>',
@@ -91,7 +92,7 @@ class Report
     def make_body(src)
       return unless src
       memo = []
-      memo << src.columns.map(&:name)
+      memo << src.columns.map { |c| "<b>#{c.name}</b>" }
       src.each(report) do |row|
         memo << convert_row(row)
       end

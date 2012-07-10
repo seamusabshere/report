@@ -3,6 +3,7 @@ unreleased / 2012-07-10
 * Enhancements
 
   * In XLSX output, freeze panes underneath first row of body
+  * In PDF output, make table body headers bold
 
 0.0.3 / 2012-07-06
 
