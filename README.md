@@ -7,20 +7,6 @@ Extracted from Brighter Planet's corporate reporting system.
 ## Usage
 
     class FleetReport < Report
-      attr_reader :batchfile
-
-      def initialize(batchfile)
-        @batchfile = batchfile
-      end
-
-      def description
-        'Fleet sustainability report'
-      end
-
-      def vehicles(type)
-        @batchfile.vehicles.where(:type => type)
-      end
-      
       table 'Cars' do
         head do
           row 'Report type', :description
@@ -74,6 +60,20 @@ Extracted from Brighter Planet's corporate reporting system.
         xlsx.page_setup.top = 1.5
         xlsx.page_setup.header = 0
         xlsx.page_setup.footer = 0
+      end
+
+      attr_reader :batchfile
+
+      def initialize(batchfile)
+        @batchfile = batchfile
+      end
+
+      def description
+        'Fleet sustainability report'
+      end
+
+      def vehicles(type)
+        @batchfile.vehicles.where(:type => type)
       end
     end
 
