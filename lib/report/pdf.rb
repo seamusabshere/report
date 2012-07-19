@@ -48,7 +48,7 @@ class Report
           if first
             first = false
           else
-            pdf.move_down 20
+            pdf.start_new_page
           end
           if t = make_head(table._head)
             pdf.table t, head
